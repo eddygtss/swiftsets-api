@@ -39,12 +39,11 @@ public class ExerciseService {
             newExercise.setName(exercise.getName());
             newExercise.setWeightRating(exercise.getWeightRating());
 
-            ExerciseType exerciseType = new ExerciseType();
+            ExerciseType exerciseType =
+                    exerciseTypeRepository.findExerciseTypeByCategoryAndEquipment(exercise.getExerciseType().getCategory(), exercise.getExerciseType().getEquipment());
 
-            try {
-                exerciseType =
-                        exerciseTypeRepository.findExerciseTypeByCategoryAndEquipment(exercise.getExerciseType().getCategory(), exercise.getExerciseType().getEquipment());
-            } catch (Exception e) {
+            if (exerciseType == null) {
+                exerciseType = new ExerciseType();
                 exerciseType.setCategory(exercise.getExerciseType().getCategory());
                 exerciseType.setEquipment(exercise.getExerciseType().getEquipment());
                 exerciseTypeRepository.save(exerciseType);
@@ -59,6 +58,7 @@ public class ExerciseService {
 
         return String.format("Successfully added %s", exercise.getName());
     }
+
     public Iterable<ExerciseType> getExercises() {
         return exerciseTypeRepository.findAll();
     }
