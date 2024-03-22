@@ -2,13 +2,12 @@ package com.swiftsets.swiftsetsapi.controller;
 
 import com.swiftsets.swiftsetsapi.entity.Exercise;
 import com.swiftsets.swiftsetsapi.entity.ExerciseType;
+import com.swiftsets.swiftsetsapi.model.ExerciseCategoryResponse;
+import com.swiftsets.swiftsetsapi.model.ExerciseEquipmentResponse;
 import com.swiftsets.swiftsetsapi.model.ExerciseTypesResponse;
 import com.swiftsets.swiftsetsapi.service.ExerciseService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -21,22 +20,27 @@ public class ExerciseController {
 
     @PostMapping("/add-exercise-type")
     public ResponseEntity<String> addExerciseType(@RequestBody ExerciseType exerciseType) {
-        String status = exerciseService.addExerciseType(exerciseType);
-
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        return exerciseService.addExerciseType(exerciseType);
     }
 
     @PostMapping("/add-exercise")
     public ResponseEntity<String> addExercise(@RequestBody Exercise exercise) {
-        String status = exerciseService.addExercise(exercise);
-
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        return exerciseService.addExercise(exercise);
     }
 
-    @GetMapping("/get-all")
-    public Iterable<ExerciseType> getAllExercise() {
-        return exerciseService.getExercises();
+    @GetMapping("/get-all-types")
+    public ExerciseTypesResponse getAllExerciseTypes() {
+        return exerciseService.getAllExerciseTypes();
     }
 
+    @GetMapping("/get-category")
+    public ExerciseCategoryResponse getExercisesByCategory(@RequestParam String category) {
+        return exerciseService.getExercisesByCategory(category);
+    }
+
+    @GetMapping("/get-equipment")
+    public ExerciseEquipmentResponse getExercisesByEquipment(@RequestParam String equipment) {
+        return exerciseService.getExercisesByEquipment(equipment);
+    }
 
 }
