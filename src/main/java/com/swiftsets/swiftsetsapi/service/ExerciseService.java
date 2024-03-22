@@ -2,9 +2,14 @@ package com.swiftsets.swiftsetsapi.service;
 
 import com.swiftsets.swiftsetsapi.entity.Exercise;
 import com.swiftsets.swiftsetsapi.entity.ExerciseType;
+import com.swiftsets.swiftsetsapi.model.ExerciseCategoryResponse;
+import com.swiftsets.swiftsetsapi.model.ExerciseEquipmentResponse;
 import com.swiftsets.swiftsetsapi.model.ExerciseTypesResponse;
 import com.swiftsets.swiftsetsapi.repository.ExerciseRepository;
 import com.swiftsets.swiftsetsapi.repository.ExerciseTypeRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,25 +24,27 @@ public class ExerciseService {
         this.exerciseRepository = exerciseRepository;
     }
 
-    public String addExerciseType(ExerciseType exerciseType) {
+    public ResponseEntity<String> addExerciseType(ExerciseType exerciseType) {
         try {
             ExerciseType newExerciseType = new ExerciseType();
             newExerciseType.setEquipment(exerciseType.getEquipment());
             newExerciseType.setCategory(exerciseType.getCategory());
 
             exerciseTypeRepository.save(newExerciseType);
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(String.format(
+                    "Unable to add %s and %s, exercise type already exists.", exerciseType.getCategory(), exerciseType.getEquipment()),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        return String.format("Successfully added %s %s", exerciseType.getCategory(), exerciseType.getEquipment());
+        return new ResponseEntity<>(String.format("Successfully added %s %s", exerciseType.getCategory(), exerciseType.getEquipment()), HttpStatus.OK);
     }
 
-    public String addExercise(Exercise exercise) {
+    public ResponseEntity<String> addExercise(Exercise exercise) {
         try {
             Exercise newExercise = new Exercise();
             newExercise.setName(exercise.getName());
-            newExercise.setWeightRating(exercise.getWeightRating());
+            newExercise.setWeightedRating(exercise.getWeightedRating());
 
             ExerciseType exerciseType =
                     exerciseTypeRepository.findExerciseTypeByCategoryAndEquipment(exercise.getExerciseType().getCategory(), exercise.getExerciseType().getEquipment());
@@ -53,13 +60,40 @@ public class ExerciseService {
 
             exerciseRepository.save(newExercise);
         } catch (Exception e) {
-            System.out.println(e);
+            return new ResponseEntity<>(String.format(
+                    "Unable to add %s, exercise already exists.", exercise.getName()), HttpStatus.BAD_REQUEST);
         }
 
-        return String.format("Successfully added %s", exercise.getName());
+        return new ResponseEntity<>(String.format("Successfully added %s", exercise.getName()), HttpStatus.OK);
     }
 
-    public Iterable<ExerciseType> getExercises() {
-        return exerciseTypeRepository.findAll();
+    public ExerciseTypesResponse getAllExerciseTypes() {
+        return ExerciseTypesResponse.builder().exerciseTypes((List<ExerciseType>) exerciseTypeRepository.findAll()).build();
+    }
+
+    public ExerciseCategoryResponse getExercisesByCategory(String category) {
+        ExerciseCategoryResponse response = ExerciseCategoryResponse.builder().build();
+
+        ExerciseType exerciseType = exerciseTypeRepository.findExerciseTypeByCategory(category);
+
+        if (exerciseType != null) {
+            response.setCategory(exerciseType.getCategory());
+            response.setExercises(exerciseType.getExercises());
+        }
+
+        return response;
+    }
+
+    public ExerciseEquipmentResponse getExercisesByEquipment(String equipment) {
+        ExerciseEquipmentResponse response = ExerciseEquipmentResponse.builder().build();
+
+        ExerciseType exerciseType = exerciseTypeRepository.findExerciseTypeByEquipment(equipment);
+
+        if (exerciseType != null) {
+            response.setEquipment(exerciseType.getEquipment());
+            response.setExercises(exerciseType.getExercises());
+        }
+
+        return response;
     }
 }
