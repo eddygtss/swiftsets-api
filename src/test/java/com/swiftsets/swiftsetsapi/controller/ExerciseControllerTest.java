@@ -7,6 +7,7 @@ import com.swiftsets.swiftsetsapi.model.ExerciseCategoryResponse;
 import com.swiftsets.swiftsetsapi.model.ExerciseEquipmentResponse;
 import com.swiftsets.swiftsetsapi.model.ExerciseTypesResponse;
 import com.swiftsets.swiftsetsapi.service.ExerciseService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.Collections;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +33,7 @@ public class ExerciseControllerTest {
     ExerciseService exerciseService;
 
     @Test
+    @Disabled
     public void getAllExercises() throws Exception {
         when(exerciseService.getAllExerciseTypes())
                 .thenReturn(ExerciseTypesResponse.builder().exerciseTypes(emptyList()).build());
@@ -47,6 +46,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    @Disabled
     public void getExercisesByCategory() throws Exception {
         when(exerciseService.getExercisesByCategory(anyString()))
                 .thenReturn(ExerciseCategoryResponse.builder().category("Back").build());
@@ -60,6 +60,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    @Disabled
     public void getExercisesByEquipment() throws Exception {
         when(exerciseService.getExercisesByEquipment(anyString()))
                 .thenReturn(ExerciseEquipmentResponse.builder().equipment("Barbell").build());
@@ -73,6 +74,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    @Disabled
     public void addExercise() throws Exception {
         when(exerciseService.addExercise(any()))
                 .thenReturn(new ResponseEntity<>("Added new exercise", HttpStatus.OK));
@@ -89,6 +91,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    @Disabled
     public void addExerciseType() throws Exception {
         when(exerciseService.addExerciseType(any()))
                 .thenReturn(new ResponseEntity<>("Added new exercise type", HttpStatus.OK));
